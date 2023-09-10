@@ -3,17 +3,6 @@
 import dependencyTree from 'dependency-tree';
 import path from 'node:path';
 
-const trampoline =
-  (function_) =>
-  (...arguments_) => {
-    let result = function_(...arguments_);
-    console.log(result);
-    while (typeof result === 'function') {
-      result = result();
-    }
-    return result;
-  };
-
 /**
  * Takes object of objects and returns object of keys and nested keys arrays
  */
@@ -71,8 +60,6 @@ export const measure = async (root, options) => {
     const points = dependencies.reduce((accumulator_, dependency) => {
       const relativePath = path.relative(folder, dependency);
       const levels = relativePath.split(path.sep).length;
-
-      console.log(relativePath, levels);
 
       return accumulator_ + levels;
     }, 0);

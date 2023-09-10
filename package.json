@@ -1,10 +1,13 @@
 {
   "name": "measure-modules",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
-  "author": "Vassiliy <bondiano> Kuzenkov",
+  "author": "Vassiliy Kuzenkov (bondiano)",
   "bin": {
     "measure-modules": "bin/measure-modules.js"
+  },
+  "git": {
+    "url": "https://github.com/bondiano/measure-modules"
   },
   "type": "module",
   "description": "",
