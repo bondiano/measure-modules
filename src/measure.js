@@ -23,8 +23,22 @@ const flatten = (tree, result = {}) => {
   return result;
 };
 
+const sumDependencies = (tree, scores) => {
+  let sum = 0;
+
+  for (const key in tree) {
+    if (Object.values(tree[key]).length === 0) {
+      return scores[key] || 0;
+    }
+
+    sum += scores[key] + sumDependencies(tree[key], scores);
+  }
+
+  return sum;
+};
+
 export const measure = async (root, options) => {
-  const { requireConfig, webpackConfig, tsConfig } = options;
+  const { requireConfig, webpackConfig, tsConfig, verbose } = options;
   const filename = path.resolve(process.cwd(), root);
   const directory = path.dirname(filename);
 
@@ -35,7 +49,7 @@ export const measure = async (root, options) => {
     webpackConfig,
     tsConfig,
     filter(path) {
-      return !path.includes('node_module');
+      return !path.includes('node_module') && path.startsWith(process.cwd());
     },
   });
 
@@ -44,11 +58,16 @@ export const measure = async (root, options) => {
    * 1. Check all dependencies
    * 2. Count distance from current module
    * 3. Every level of distance is 1 point
-   * 4. Sum all points
+   * 4. Add points for every dependency
+   * 5. Sum all points
    *
    * Example:
    * `./src/foo/bar/baz.js` depends on `./src/foo/test.js` and `./src/something/also.js`
-   * And it scores 3 points.
+   * And it scores 6 points.
+   *
+   * And it scores 6 points:
+   * ../../something/also.js 4
+   * ../test.js 2
    */
 
   const flattenTree = flatten(tree);
@@ -67,6 +86,17 @@ export const measure = async (root, options) => {
     accumulator[key] = points;
     return accumulator;
   }, {});
+
+  if (verbose) {
+    console.log(
+      'Score by path:',
+      Object.entries(scoreByPath).sort(
+        ([_, scoreA], [__, scoreB]) => scoreB - scoreA,
+      ),
+    );
+
+    console.log('Sum dependencies:', sumDependencies(tree, scoreByPath));
+  }
 
   const score = Object.values(scoreByPath).reduce((accumulator, points) => {
     return accumulator + points;

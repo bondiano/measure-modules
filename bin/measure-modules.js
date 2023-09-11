@@ -27,6 +27,11 @@ yargs(hideBin(process.argv))
           description:
             'TypeScript config for resolving aliased modules - Either a path to a tsconfig file or an object containing the config',
         },
+        verbose: {
+          type: 'boolean',
+          default: false,
+          description: 'Print verbose output',
+        },
       }),
     (argv) => measure(argv.root, argv),
   )

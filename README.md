@@ -7,7 +7,8 @@ Simple tool to measure module cohesion size based on the imports path.
 1. Check all dependencies
 2. Count distance from current module
 3. Every level of distance adds 1 point
-4. Sum all points
+4. Add points for every dependency
+6. Sum all points
 
 ## Example
 
